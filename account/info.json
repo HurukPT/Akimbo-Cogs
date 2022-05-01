@@ -4,7 +4,7 @@
     "short": "The Account Cog",
     "description": "Just an account cog with fields like email, age, gender, spells from dnd, and such.",
     "name": "Account",
-    "requirements": "tabulate",
+    "requirements": ["tabulate"],
     "tags": [
         "Account",
         "Profile"
