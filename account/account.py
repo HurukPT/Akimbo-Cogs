@@ -431,6 +431,7 @@ class Account(commands.Cog):
             for id in db:
                 user=server.get_member(id)
                 nickname=user.display_name
+                nickname=nickname[0:15]
                 userdata=await self.config.member(user).all()
                 if category == "Spell":
                     if filter.upper() in map(str.upper, userdata[category]):
