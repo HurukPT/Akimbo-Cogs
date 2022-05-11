@@ -345,6 +345,7 @@ class Account(commands.Cog):
                     spell=string.capwords(spell)
                     async with guild_group.Spell() as SpellGroup:
                         SpellGroup.append(spell)
+                        SpellGroup.sort()
                     data = discord.Embed(colour=user.colour)
                     data.add_field(name="Congrats!:sparkles:",value="You have set your Spell to {}".format(spell))
                     await ctx.send(embed=data)
