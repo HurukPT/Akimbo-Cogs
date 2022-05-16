@@ -353,6 +353,9 @@ class Account(commands.Cog):
         """Which spell do you know?"""
 
         new_spell_list = [x.strip() for x in spell.split(",")]
+        new_spell_list_valid = []
+        new_spell_list_invalid = []
+        new_spell_list_duplicate = []
         server = ctx.guild
         user = ctx.author
         prefix = ctx.prefix
@@ -370,27 +373,44 @@ class Account(commands.Cog):
             await ctx.send(embed=data)
         else:
             for new_spell in new_spell_list:
-                if new_spell.upper() in map(str.upper, spells):
-
-                    if (new_spell.upper() not in map(str.upper, userdata["Spell"])):
-                        new_spell = string.capwords(new_spell)
-                        async with guild_group.Spell() as SpellGroup:
-                            SpellGroup.append(new_spell)
-                            SpellGroup.sort()
-                        data = discord.Embed(colour=user.colour)
-                        data.add_field(
-                            name="Congrats!:sparkles:", value="You have scribed {} into your Spellbook".format(new_spell))
-                        await ctx.send(embed=data)
-                    elif new_spell.upper() in map(str.upper, userdata["Spell"]):
-                        await ctx.send("That spell is already in your db")
-
+                # checks if it's a valid spell
+                if new_spell.upper() not in map(str.upper, spells):
+                    new_spell_list_invalid.append(new_spell)
+                    continue
                 else:
-                    data = discord.Embed(colour=user.colour)
-                    data.add_field(name="Error:warning:",
-                                   value="{} is not a valid spell.".format(new_spell))
-                    data.add_field(
-                        name="Things to try:", value="Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)")
-                    await ctx.send(embed=data)
+                    # checks if the user already has this spell
+                    if new_spell.upper() in map(str.upper, userdata["Spell"]):
+                        new_spell_list_duplicate.append(new_spell)
+                        continue
+                    else:
+                        new_spell_list_valid.append(string.capwords(new_spell))
+                        continue
+
+            # send the valid spells, if any
+            if(len(new_spell_list_valid) > 0):
+                async with guild_group.Spell() as SpellGroup:
+                    SpellGroup.extend(new_spell_list_valid)
+                    SpellGroup.sort()
+                data = discord.Embed(colour=user.colour)
+                data.add_field(
+                    name="Congrats!:sparkles:", value="You have scribed the following spells into your Spellbook:\n{}".format(map(str, new_spell_list_valid)))
+                await ctx.send(embed=data)
+
+            # send the duplicate spells, if any
+            if(len(new_spell_list_duplicate) > 0):
+                data = discord.Embed(colour=user.colour)
+                data.add_field(
+                    name="I'm saving you money!:coin:", value="You already had these spells in your Spellbook:\n{}".format(map(str, new_spell_list_duplicate)))
+                await ctx.send(embed=data)
+
+            # send the invalid spells, if any
+            if(len(new_spell_list_invalid) > 0):
+                data = discord.Embed(colour=user.colour)
+                data.add_field(name="Oh no!:warning:",
+                               value="The following spells are not a valid:\n{}}".format(map(str, new_spell_list_invalid)))
+                data.add_field(
+                    name="Things to try:", value="Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)")
+                await ctx.send(embed=data)
 
     @commands.command()
     @commands.guild_only()
