@@ -352,6 +352,7 @@ class Account(commands.Cog):
     async def spell(self, ctx, *, spell):
         """Which spell do you know?"""
 
+        new_spell_list = [x.strip() for x in spell.split(",")]
         server = ctx.guild
         user = ctx.author
         prefix = ctx.prefix
@@ -368,27 +369,28 @@ class Account(commands.Cog):
             data.add_field(name="Error:warning:", value="Sadly, this feature is only available for people who had registered for an account. \n\nYou can register for a account today for free. All you have to do is say `{}signup` and you'll be all set.".format(prefix))
             await ctx.send(embed=data)
         else:
-            if spell.upper() in map(str.upper, spells):
+            for new_spell in new_spell_list:
+                if new_spell.upper() in map(str.upper, spells):
 
-                if (spell.upper() not in map(str.upper, userdata["Spell"])):
-                    spell = string.capwords(spell)
-                    async with guild_group.Spell() as SpellGroup:
-                        SpellGroup.append(spell)
-                        SpellGroup.sort()
+                    if (new_spell.upper() not in map(str.upper, userdata["Spell"])):
+                        new_spell = string.capwords(new_spell)
+                        async with guild_group.Spell() as SpellGroup:
+                            SpellGroup.append(new_spell)
+                            SpellGroup.sort()
+                        data = discord.Embed(colour=user.colour)
+                        data.add_field(
+                            name="Congrats!:sparkles:", value="You have set your Spell to {}".format(spell))
+                        await ctx.send(embed=data)
+                    elif new_spell.upper() in map(str.upper, userdata["Spell"]):
+                        await ctx.send("That spell is already in your db")
+
+                else:
                     data = discord.Embed(colour=user.colour)
+                    data.add_field(name="Error:warning:",
+                                   value="Please enter a valid spell.")
                     data.add_field(
-                        name="Congrats!:sparkles:", value="You have set your Spell to {}".format(spell))
+                        name="Things to try:", value="Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)")
                     await ctx.send(embed=data)
-                elif spell.upper() in map(str.upper, userdata["Spell"]):
-                    await ctx.send("That spell is already in your db")
-
-            else:
-                data = discord.Embed(colour=user.colour)
-                data.add_field(name="Error:warning:",
-                               value="Please enter a valid spell.")
-                data.add_field(
-                    name="Things to try:", value="Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)")
-                await ctx.send(embed=data)
 
     @commands.command()
     @commands.guild_only()
