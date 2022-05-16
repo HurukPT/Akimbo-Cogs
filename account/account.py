@@ -352,7 +352,9 @@ class Account(commands.Cog):
     async def spell(self, ctx, *, spell):
         """Which spell do you know?"""
 
-        new_spell_list = [x.strip() for x in spell.split(",")]
+        # making a set so that duplicate spells in the same call are not considered
+        new_spell_list = set(string.capwords(str.lower(x.strip()))
+                             for x in spell.split(","))
         new_spell_list_valid = []
         new_spell_list_invalid = []
         new_spell_list_duplicate = []
