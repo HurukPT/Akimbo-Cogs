@@ -236,11 +236,16 @@ class Account(commands.Cog):
             # send the valid spells, if any
             if(len(new_spell_list_valid) > 0):
                 async with guild_group.Spell() as SpellGroup:
-                    SpellGroup.remove(new_spell_list_valid)
+                    for spell in new_spell_list_valid:
+                        try:
+                            SpellGroup.remove(spell)
+                        except ValueError:
+                            new_spell_list_valid.remove(spell)
+                            pass
                     SpellGroup.sort()
                 data = discord.Embed(colour=user.colour)
                 data.add_field(
-                    name="Congrats!:sparkles:", value="You have scribed the following spells into your Spellbook:\n{}".format(", ".join(new_spell_list_valid)))
+                    name="Congrats!:sparkles:", value="You have ripped the pages of the following spells from your Spellbook:\n{}".format(", ".join(new_spell_list_valid)))
                 await ctx.send(embed=data)
 
             # send the duplicate spells, if any
