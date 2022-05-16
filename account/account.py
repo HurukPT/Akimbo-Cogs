@@ -387,7 +387,7 @@ class Account(commands.Cog):
                 else:
                     data = discord.Embed(colour=user.colour)
                     data.add_field(name="Error:warning:",
-                                   value="{} is not a valid spell.")
+                                   value="{} is not a valid spell.".format(new_spell))
                     data.add_field(
                         name="Things to try:", value="Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)")
                     await ctx.send(embed=data)
