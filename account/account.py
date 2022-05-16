@@ -393,7 +393,7 @@ class Account(commands.Cog):
                     SpellGroup.sort()
                 data = discord.Embed(colour=user.colour)
                 data.add_field(
-                    name="Congrats!:sparkles:", value="You have scribed the following spells into your Spellbook:\n{}".format("".join(*new_spell_list_valid, sep=", ")))
+                    name="Congrats!:sparkles:", value="You have scribed the following spells into your Spellbook:\n{}".format(", ".join(new_spell_list_valid)))
                 await ctx.send(embed=data)
 
             # send the duplicate spells, if any
