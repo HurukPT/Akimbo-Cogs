@@ -379,7 +379,7 @@ class Account(commands.Cog):
                             SpellGroup.sort()
                         data = discord.Embed(colour=user.colour)
                         data.add_field(
-                            name="Congrats!:sparkles:", value="You have set your Spell to {}".format(spell))
+                            name="Congrats!:sparkles:", value="You have scribed {} into your Spellbook".format(new_spell))
                         await ctx.send(embed=data)
                     elif new_spell.upper() in map(str.upper, userdata["Spell"]):
                         await ctx.send("That spell is already in your db")
