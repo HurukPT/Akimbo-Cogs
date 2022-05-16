@@ -407,7 +407,7 @@ class Account(commands.Cog):
             if(len(new_spell_list_invalid) > 0):
                 data = discord.Embed(colour=user.colour)
                 data.add_field(name="Oh no!:warning:",
-                               value="The following spells are not a valid:\n{}}".format(", ".join(new_spell_list_invalid)))
+                               value="The following spells are not a valid:\n{}".format(", ".join(new_spell_list_invalid)))
                 data.add_field(
                     name="Things to try:", value="Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)")
                 await ctx.send(embed=data)
