@@ -45,7 +45,7 @@ class Account(commands.Cog):
                 name="Error:warning:", value="Opps, it seems like you already have an account, {}.".format(user.mention))
             await ctx.send(embed=data)
 
-    @commands.command(name="account")
+    @commands.command(name="spellbook")
     @commands.guild_only()
     async def _acc(self, ctx, user: discord.Member = None):
         """Your/Others Account"""
@@ -115,7 +115,7 @@ class Account(commands.Cog):
                 name="Error:warning:", value="{} doesn't have an account at the moment, sorry.".format(user.mention))
             await ctx.send(embed=data)
 
-    @commands.group(name="update")
+    @commands.group(name="add")
     @commands.guild_only()
     async def update(self, ctx):
         """Update your TPC"""
