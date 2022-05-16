@@ -469,12 +469,6 @@ class Account(commands.Cog):
                     await self.config.member(user).Email.clear()
                 if category == "Other":
                     await self.config.member(user).Other.clear()
-
-                data = discord.Embed(colour=user.colour)
-                data.add_field(name="Congrats!:sparkles:",
-                               value="You have removed {} from your {}".format(value, category))
-                await ctx.send(embed=data)
-
             else:
                 await ctx.send("Not a valid category")
 
