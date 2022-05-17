@@ -110,11 +110,11 @@ class Spellbook(commands.Cog):
 
     @commands.group(name="add")
     @commands.guild_only()
-    async def update(self, ctx):
+    async def add(self, ctx):
         """Update your Spellbook"""
         pass
 
-    @update.command()
+    @add.command()
     @commands.guild_only()
     async def spell(self, ctx, *, spell):
         """Which spell(s) do you want to add?"""
@@ -168,9 +168,15 @@ class Spellbook(commands.Cog):
                 await self.sendDiscordMessage(ctx, ":warning:Oh no!:warning:",
                                               "The following spells are not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format(", ".join(new_spell_list_invalid)))
 
-    @commands.command()
+    @commands.group(name="remove")
     @commands.guild_only()
-    async def remove(self, ctx, *, spell):
+    async def remove(self, ctx):
+        """Rips pages from your Spellbook"""
+        pass
+
+    @remove.command()
+    @commands.guild_only()
+    async def spell(self, ctx, *, spell):
         """Rip pages from your spellbook, as hard as it is to do it"""
 
         # making a set so that duplicate spells in the same call are not considered
