@@ -275,7 +275,7 @@ class Spellbook(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def addallspells(self, ctx):
-        """"Adds all the spells to your Spellbook"""
+        """Adds all the spells to your Spellbook"""
 
         server = ctx.guild
         user = ctx.author
@@ -327,7 +327,8 @@ class Spellbook(commands.Cog):
             await ctx.send(content=f"Chillout, Your on cooldown. Retry in {int(error.retry_after)} seconds", delete_after=int(error.retry_after))
 
     async def sendDiscordMessage(self, ctx, title, text):
-        data = discord.Embed(ctx.author.colour)
+        user = ctx.author
+        data = discord.Embed(user.colour)
         data.add_field(title, text)
         await ctx.send(embed=data)
 
