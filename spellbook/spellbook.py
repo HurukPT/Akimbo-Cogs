@@ -16,6 +16,7 @@ class Spellbook(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         default_member = {
+            "Characterpic": None,
             "Spell": []
         }
         default_guild = {
