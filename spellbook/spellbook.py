@@ -328,7 +328,7 @@ class Spellbook(commands.Cog):
 
     async def sendDiscordMessage(self, ctx, title, text):
         data = discord.Embed(colour=ctx.author.colour)
-        data.add_field(title, text)
+        data.add_field(name=title, value=text)
         await ctx.send(embed=data)
 
     # List of Spell https://pastebin.com/YS7NmYqh
