@@ -106,7 +106,7 @@ class Spellbook(commands.Cog):
             await menu(ctx, Pages, DEFAULT_CONTROLS)
         else:
             await self.sendDiscordMessage(ctx, ":warning:Error:warning:",
-                                          "{} doesn't have an account at the moment, sorry.".format(user.mention))
+                                          "{} doesn't have an spellbook at the moment, sorry.".format(user.mention))
 
     @commands.group(name="add")
     @commands.guild_only()
