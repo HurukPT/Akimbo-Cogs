@@ -16,6 +16,6 @@ def listformatter(listtoformat):
     return listtoformat
 
 
-def processStringToList(string):
+def processStringToList(spellList):
     return sorted(set(string.capwords(str.lower(x.strip()))
-                      for x in string.split(",")))
+                      for x in spellList.split(",")))
