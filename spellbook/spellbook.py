@@ -1,3 +1,4 @@
+from unicodedata import name
 import discord
 import string
 from tabulate import tabulate
@@ -114,9 +115,9 @@ class Spellbook(commands.Cog):
         """Update your Spellbook"""
         pass
 
-    @add.command()
+    @add.command(name="spells")
     @commands.guild_only()
-    async def spell(self, ctx, *, spell):
+    async def addSpell(self, ctx, *, spell):
         """Which spell(s) do you want to add?"""
 
         # making a set so that duplicate spells in the same call are not considered
@@ -174,9 +175,9 @@ class Spellbook(commands.Cog):
         """Rips pages from your Spellbook"""
         pass
 
-    @remove.command()
+    @remove.command(name="spells")
     @commands.guild_only()
-    async def spell(self, ctx, *, spell):
+    async def removeSpells(self, ctx, *, spell):
         """Rip pages from your spellbook, as hard as it is to do it"""
 
         # making a set so that duplicate spells in the same call are not considered
