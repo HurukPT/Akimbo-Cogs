@@ -37,11 +37,9 @@ class Spellbook(commands.Cog):
         if user.id not in db:
             db.append(user.id)
             await self.config.guild(server).db.set(db)
-            await self.sendDiscordMessage(
-                ctx, ":mage:Congrats!:mage:", "You have created your spellbook for **{}**, {}.".format(server.name, user.mention))
+            await self.sendDiscordMessage(ctx, ":mage:Congrats!:mage:", "You have created your spellbook for **{}**, {}.".format(server.name, user.mention))
         else:
-            await self.sendDiscordMessage(ctx, ":warning:Error:warning:",
-                                          "Opps, it seems like you already have an account, {}.".format(user.mention))
+            await self.sendDiscordMessage(ctx, ":warning:Error:warning:", "Opps, it seems like you already have a spellbook, {}.".format(user.mention))
 
     @commands.command(name="spellbook")
     @commands.guild_only()
@@ -112,7 +110,7 @@ class Spellbook(commands.Cog):
 
     @commands.group(name="add")
     @commands.guild_only()
-    async def update(self):
+    async def update(self, ctx):
         """Update your Spellbook"""
         pass
 
