@@ -56,6 +56,10 @@ class Spellbook(commands.Cog):
         Pages = []
         Pageno = 1
 
+        if user.id not in db:
+            await self.sendDiscordMessage(
+                ctx, "Error:warning:", "Sadly, you can't peek into other people's Spellbooks without having a spellbook first. \n\nYou can create your spellbook by saying `{}signup` and you'll be all set.".format(prefix))
+
         for k, v in userdata.items():
             data = discord.Embed(colour=user.colour)
             # data.set_author(name="{}'s Account".format(user.name), icon_url=user.avatar_url)
@@ -107,7 +111,7 @@ class Spellbook(commands.Cog):
             await menu(ctx, Pages, DEFAULT_CONTROLS)
         else:
             await self.sendDiscordMessage(ctx, ":warning:Error:warning:",
-                                          "{} doesn't have an spellbook at the moment, sorry.".format(user.mention))
+                                          "{}'s Spellbook is empty.".format(user.mention))
 
     @commands.group(name="add")
     @commands.guild_only()
