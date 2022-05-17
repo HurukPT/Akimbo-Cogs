@@ -110,7 +110,7 @@ class Spellbook(commands.Cog):
         if len(Pages) != 0:
             await menu(ctx, Pages, DEFAULT_CONTROLS)
         else:
-            await self.sendDiscordMessage(ctx, ":warning:Error:warning:",
+            await self.sendDiscordMessage(ctx, ":smiling_face_with_tear:Sad Wizard is sad:smiling_face_with_tear:",
                                           "{}'s Spellbook is empty.".format(user.mention))
 
     @commands.group(name="add")
