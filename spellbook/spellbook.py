@@ -36,9 +36,9 @@ class Spellbook(commands.Cog):
         if user.id not in db:
             db.append(user.id)
             await self.config.guild(server).db.set(db)
-            await self.sendDiscordMessage(ctx, ":mage:Congrats!:mage:", "You have created your spellbook for **{}**, {}.".format(server.name, user.mention))
+            await self.sendDiscordMessage(ctx, title=":mage:Congrats!:mage:", text="You have created your spellbook for **{}**, {}.".format(server.name, user.mention))
         else:
-            await self.sendDiscordMessage(ctx, ":warning:Error:warning:", "Opps, it seems like you already have an account, {}.".format(user.mention))
+            await self.sendDiscordMessage(ctx, title=":warning:Error:warning:", text="Opps, it seems like you already have an account, {}.".format(user.mention))
 
     @commands.command(name="spellbook")
     @commands.guild_only()
@@ -313,7 +313,7 @@ class Spellbook(commands.Cog):
             async with guild_group.Spell() as SpellGroup:
                 SpellGroup.clear()
 
-            self.sendDiscordMessage(ctx, ":question:Congrats?:question:",
+            self.sendDiscordMessage(ctx, title=":question:Congrats?:question:",
                                     value="You have removed all the Spells from your Spellbook")
 
     @addallspells.error
