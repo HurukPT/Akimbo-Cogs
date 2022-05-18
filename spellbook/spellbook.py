@@ -141,7 +141,7 @@ class Spellbook(commands.Cog):
         else:
             for new_spell in new_spell_list:
                 # checks if it's a valid spell
-                if isSpellValid():
+                if isSpellValid(new_spell):
                     new_spell_list_invalid.append(new_spell)
                     continue
                 else:
@@ -200,7 +200,7 @@ class Spellbook(commands.Cog):
         else:
             for new_spell in new_spell_list:
                 # checks if it's a valid spell
-                if isSpellValid():
+                if isSpellValid(new_spell):
                     new_spell_list_invalid.append(new_spell)
                     continue
                 else:
