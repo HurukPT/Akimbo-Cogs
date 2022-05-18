@@ -159,7 +159,7 @@ class Spellbook(commands.Cog):
                     SpellGroup.extend(new_spell_list_valid)
                     SpellGroup.sort()
                     await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
-                                                  "You have copied the following spell{} into your Spellbook:\n{}".format("spells" if(len(new_spell_list_valid) > 1) else "spell", ", ".join(new_spell_list_valid)))
+                                                  "You have copied the following {} into your Spellbook:\n{}".format("spells" if(len(new_spell_list_valid) > 1) else "spell", ", ".join(new_spell_list_valid)))
 
             # send the duplicate spells, if any
             if(len(new_spell_list_duplicate) > 0):
