@@ -223,7 +223,7 @@ class Spellbook(commands.Cog):
                             new_spell_list_valid.remove(spell)
                             pass
                     SpellGroup.sort()
-                    await self.sendDiscordMessage(ctx, ":sob: Success: sob:", "You have ripped the pages of the following spells from your Spellbook:\n{}".format(
+                    await self.sendDiscordMessage(ctx, ":sob: Success :sob:", "You have ripped the pages of the following spells from your Spellbook:\n{}".format(
                         ", ".join(new_spell_list_valid)))
 
             # send the duplicate spells, if any
