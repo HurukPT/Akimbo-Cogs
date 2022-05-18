@@ -264,8 +264,8 @@ class Spellbook(commands.Cog):
                     FilteredList.extend([[f"{nickname}", f"{user.id}"]])
 
             if len(FilteredList) == 0:
-                await ctx.send("There isn't a single Wizard here that knows that spell")
-
+                await self.sendDiscordMessage(
+                    ctx, ":warning: Oh no! :warning:", "There are no Wizards who know {}".format(filter))
             else:
                 SplitList = [FilteredList[i * Resultsperpage:(i + 1) * Resultsperpage] for i in range(
                     (len(FilteredList) + Resultsperpage - 1) // Resultsperpage)]
