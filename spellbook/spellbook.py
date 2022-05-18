@@ -253,7 +253,7 @@ class Spellbook(commands.Cog):
             await ctx.send("There are no spellbooks in this library")
 
         if not isSpellValid(filter):
-            await self.sendDiscordMessage(ctx, ":warning: Oh no! :warning:", "{} is not a valid spell. Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format(", ".join(filter)))
+            await self.sendDiscordMessage(ctx, ":warning: Oh no! :warning:", "{} is not a valid spell. Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format(filter))
         else:
             for id in db:
                 user = server.get_member(id)
