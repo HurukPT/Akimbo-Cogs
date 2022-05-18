@@ -6,7 +6,7 @@ complete_spell_list = ["Abi-Dalzim's Horrid Wilting", "Absorb Elements", "Aganaz
 
 
 def isSpellValid(spell):
-    return spell.upper() in map(str.upper, complete_spell_list)
+    return string.capwords(str.lower(spell.strip())) in complete_spell_list
 
 
 def listformatter(listtoformat):

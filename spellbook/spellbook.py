@@ -37,9 +37,9 @@ class Spellbook(commands.Cog):
         if user.id not in db:
             db.append(user.id)
             await self.config.guild(server).db.set(db)
-            await self.sendDiscordMessage(ctx, ":mage:Congrats!:mage:", "You have created your spellbook for **{}**, {}.".format(server.name, user.mention))
+            await self.sendDiscordMessage(ctx, ":mage: Congrats! :mage:", "You have created your spellbook for **{}**, {}.".format(server.name, user.mention))
         else:
-            await self.sendDiscordMessage(ctx, ":warning:Error:warning:", "Opps, it seems like you already have a spellbook, {}.".format(user.mention))
+            await self.sendDiscordMessage(ctx, ":warning: Error :warning:", "Opps, it seems like you already have a spellbook, {}.".format(user.mention))
 
     @commands.command(name="spellbook")
     @commands.guild_only()
@@ -57,7 +57,7 @@ class Spellbook(commands.Cog):
 
         if user.id not in db:
             await self.sendDiscordMessage(
-                ctx, "Error:warning:", "Sadly, you can't peek into other people's Spellbooks without having a spellbook first. \n\nYou can create your spellbook by saying `{}signup` and you'll be all set.".format(prefix))
+                ctx, ":warning: Error :warning:", "Sadly, you can't peek into other people's Spellbooks without having a spellbook first. \n\nYou can create your spellbook by saying `{}signup` and you'll be all set.".format(prefix))
 
         for k, v in userdata.items():
             data = discord.Embed(colour=user.colour)
@@ -109,7 +109,7 @@ class Spellbook(commands.Cog):
         if len(Pages) != 0:
             await menu(ctx, Pages, DEFAULT_CONTROLS)
         else:
-            await self.sendDiscordMessage(ctx, ":smiling_face_with_tear:Sad Wizard is sad:smiling_face_with_tear:",
+            await self.sendDiscordMessage(ctx, ":smiling_face_with_tear: Sad Wizard is sad :smiling_face_with_tear:",
                                           "{}'s Spellbook is empty.".format(user.mention))
 
     @commands.group(name="add")
@@ -137,11 +137,11 @@ class Spellbook(commands.Cog):
 
         if user.id not in db:
             await self.sendDiscordMessage(
-                ctx, "Error:warning:", "Sadly, you can't add spells without having a spellbook first. \n\nYou can create your spellbook by saying `{}signup` and you'll be all set.".format(prefix))
+                ctx, ":warning: Error :warning:", "Sadly, you can't add spells without having a spellbook first. \n\nYou can create your spellbook by saying `{}signup` and you'll be all set.".format(prefix))
         else:
             for new_spell in new_spell_list:
                 # checks if it's a valid spell
-                if isSpellValid(new_spell):
+                if not isSpellValid(new_spell):
                     new_spell_list_invalid.append(new_spell)
                     continue
                 else:
@@ -158,17 +158,17 @@ class Spellbook(commands.Cog):
                 async with guild_group.Spell() as SpellGroup:
                     SpellGroup.extend(new_spell_list_valid)
                     SpellGroup.sort()
-                    await self.sendDiscordMessage(ctx, ":sparkles:Success!:sparkles:",
+                    await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
                                                   "You have scribed the following spells into your Spellbook:\n{}".format(", ".join(new_spell_list_valid)))
 
                     # send the duplicate spells, if any
             if(len(new_spell_list_duplicate) > 0):
-                await self.sendDiscordMessage(ctx, ":coin:I'm saving you money!:coin:",
+                await self.sendDiscordMessage(ctx, ":coin: I'm saving you money! :coin:",
                                               "You already had these spells in your Spellbook: \n{}".format(", ".join(new_spell_list_duplicate)))
 
                 # send the invalid spells, if any
             if(len(new_spell_list_invalid) > 0):
-                await self.sendDiscordMessage(ctx, ":warning:Oh no!:warning:",
+                await self.sendDiscordMessage(ctx, ":warning: Oh no! :warning:",
                                               "The following spells are not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format(", ".join(new_spell_list_invalid)))
 
     @commands.group(name="remove")
@@ -196,11 +196,11 @@ class Spellbook(commands.Cog):
 
         if user.id not in db:
             await self.sendDiscordMessage(
-                ctx, "Error:warning:", "Sadly, you can't add spells without having a spellbook first. \n\nYou can create your spellbook by saying `{}signup` and you'll be all set.".format(prefix))
+                ctx, ":warning: Error :warning:", "Sadly, you can't add spells without having a spellbook first. \n\nYou can create your spellbook by saying `{}signup` and you'll be all set.".format(prefix))
         else:
             for new_spell in new_spell_list:
                 # checks if it's a valid spell
-                if isSpellValid(new_spell):
+                if not isSpellValid(new_spell):
                     new_spell_list_invalid.append(new_spell)
                     continue
                 else:
@@ -223,18 +223,18 @@ class Spellbook(commands.Cog):
                             new_spell_list_valid.remove(spell)
                             pass
                     SpellGroup.sort()
-                    await self.sendDiscordMessage(ctx, ":sob:Success:sob:", "You have ripped the pages of the following spells from your Spellbook:\n{}".format(
+                    await self.sendDiscordMessage(ctx, ":sob: Success: sob:", "You have ripped the pages of the following spells from your Spellbook:\n{}".format(
                         ", ".join(new_spell_list_valid)))
 
             # send the duplicate spells, if any
             if(len(new_spell_list_unlearned) > 0):
-                await self.sendDiscordMessage(ctx, ":question:Hmm?:question:", "You don't have these spells in your Spellbook:\n{}".format(
+                await self.sendDiscordMessage(ctx, ":question: Hmm? :question:", "You don't have these spells in your Spellbook:\n{}".format(
                     ", ".join(new_spell_list_unlearned)))
 
                 # send the invalid spells, if any
             if(len(new_spell_list_invalid) > 0):
                 await self.sendDiscordMessage(
-                    ctx, ":warning:Oh no!:warning:", "The following spells are not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format(", ".join(new_spell_list_invalid)))
+                    ctx, ":warning: Oh no! :warning:", "The following spells are not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format(", ".join(new_spell_list_invalid)))
 
     @commands.command()
     @commands.guild_only()
@@ -253,7 +253,7 @@ class Spellbook(commands.Cog):
             await ctx.send("There are no spellbooks in this library")
 
         if not isSpellValid(filter):
-            await self.sendDiscordMessage(ctx, ":warning:Oh no!:warning:", "{} is not a valid spell. Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format(", ".join(filter)))
+            await self.sendDiscordMessage(ctx, ":warning: Oh no! :warning:", "{} is not a valid spell. Please make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format(", ".join(filter)))
         else:
             for id in db:
                 user = server.get_member(id)
