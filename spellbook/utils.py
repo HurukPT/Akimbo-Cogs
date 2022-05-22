@@ -6,7 +6,7 @@ complete_spell_list = ["Abi-Dalzim's Horrid Wilting", "Absorb Elements", "Aganaz
 
 
 def isSpellValid(spell):
-    return string.capwords(str.lower(spell.strip())) in complete_spell_list
+    return spell in complete_spell_list
 
 
 def listformatter(listtoformat):
@@ -25,5 +25,6 @@ def listformatter(listtoformat):
 
 
 def processStringToList(spellList):
-    return sorted(set(string.capwords(str.lower(x.strip()))
+
+    return sorted(set(string.capwords(str.lower(x.strip())).replace("Of", "of").replace("And", "and").replace("From", "from").replace("The", "the").replace("To", "to")
                       for x in spellList.split(",")))
