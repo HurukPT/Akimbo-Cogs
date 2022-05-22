@@ -1,5 +1,4 @@
 import discord
-import string
 from tabulate import tabulate
 
 from redbot.core import Config
@@ -146,11 +145,11 @@ class Spellbook(commands.Cog):
                     continue
                 else:
                     # checks if the user already has this spell
-                    if new_spell.upper() in map(str.upper, userdata["Spell"]):
+                    if new_spell in userdata["Spell"]:
                         new_spell_list_duplicate.append(new_spell)
                         continue
                     else:
-                        new_spell_list_valid.append(string.capwords(new_spell))
+                        new_spell_list_valid.append(new_spell)
                         continue
 
             # save the valid spells, if any
@@ -205,12 +204,11 @@ class Spellbook(commands.Cog):
                     continue
                 else:
                     # checks if the user already has this spell
-                    if new_spell.upper() in map(str.upper, userdata["Spell"]):
+                    if new_spell in userdata["Spell"]:
                         new_spell_list_valid.append(new_spell)
                         continue
                     else:
-                        new_spell_list_unlearned.append(
-                            string.capwords(new_spell))
+                        new_spell_list_unlearned.append(new_spell)
                         continue
 
                         # send the valid spells, if any
@@ -240,7 +238,7 @@ class Spellbook(commands.Cog):
     async def filter(self, ctx, *, filter):
         """Searches for Wizards with knowledge of a particular spell"""
 
-        filter = string.capwords(filter)
+        filter = processStringToList(filter)
         server = ctx.guild
         db = await self.config.guild(server).db()
         FilteredList = []
@@ -260,7 +258,7 @@ class Spellbook(commands.Cog):
                 nickname = nickname[0:20]
                 userdata = await self.config.member(user).all()
 
-                if filter.upper() in map(str.upper, userdata["Spell"]):
+                if filter in userdata["Spell"]:
                     FilteredList.extend([[f"{nickname}", f"{user.id}"]])
 
             if len(FilteredList) == 0:
