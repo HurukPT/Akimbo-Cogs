@@ -168,7 +168,7 @@ class Spellbook(commands.Cog):
             # send the invalid spells, if any
             if(len(new_spell_list_invalid) > 0):
                 await self.sendDiscordMessage(ctx, ":warning: Oh no! :warning:",
-                                              "The following {} not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format("spells are" if(len(new_spell_list_duplicate) > 1) else "spell is", ", ".join(new_spell_list_invalid)))
+                                              "The following {} not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format("spells are" if(len(new_spell_list_invalid) > 1) else "spell is", ", ".join(new_spell_list_invalid)))
 
     @commands.group(name="remove")
     @commands.guild_only()
