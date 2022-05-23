@@ -238,7 +238,7 @@ class Spellbook(commands.Cog):
     async def filter(self, ctx, *, filter):
         """Searches for Wizards with knowledge of a particular spell"""
 
-        filter = processStringToList(filter)
+        filter = processStringToList(filter).pop()
         server = ctx.guild
         db = await self.config.guild(server).db()
         FilteredList = []
