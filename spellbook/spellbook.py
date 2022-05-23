@@ -46,6 +46,7 @@ class Spellbook(commands.Cog):
         """Take a peek at your, or someone else's, spellbook."""
 
         server = ctx.guild
+        prefix = ctx.prefix
         db = await self.config.guild(server).db()
         user = user if user else ctx.author
         userdata = await self.config.member(user).all()
