@@ -214,7 +214,7 @@ def getSubclass(subclass):
     db = connectDatabase()
     cursor = db.cursor()
     try:
-        query = f"SELECT * FROM subclass s WHERE s.subclass = '{subclass}' AND s.isValid = {True}"
+        query = f"SELECT * FROM subclass s WHERE LOWER(s.subclass) = LOWER('{subclass}') AND s.isValid = {True}"
         cursor.execute(query)
         return cursor.fetchmany()
     finally:

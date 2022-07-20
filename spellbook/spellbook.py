@@ -40,7 +40,7 @@ class Spellbook(commands.Cog):
     async def retire(self, ctx):
         """Retires your current active character, so you can create another"""
         try:
-            wizard_name = db.retire(ctx.author.id)
+            wizard_name = db.retireCharacter(ctx.author.id)
             await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
                                           "You have successfully retired {}!".format(wizard_name))
         except error.NoActiveCharacter:
