@@ -37,7 +37,10 @@ def addCharacter(discordId, charName, subclass, level=1):
     db = connectDatabase()
     cursor = db.cursor()
     currentChar = getPlayer(discordId)
+    print(currentChar)
     if currentChar is None:
+        # school = getSubclass(subclass) is
+        if s
         try:
             query = f"INSERT INTO 'player' VALUES(NULL, '{discordId}', '{charName}', '{subclass}', '{level}', 1)"
             cursor.execute(query)
