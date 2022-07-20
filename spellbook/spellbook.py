@@ -34,7 +34,7 @@ class Spellbook(commands.Cog):
                 ctx, ":warning: Error :warning:", "'{}' is not a valid subclass. Please type a subclass from this list: [Abjuration, Bladesinger, Conjuration, Divination, Enchantment, Evocation, Graviturgy, Illusion, Necromancy, Ritual Caster, Scribe, Transmutation, War]".format(subclass))
         except error.ActiveCharExists:
             await self.sendDiscordMessage(
-                ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire <character name> to deactivate it, and then try this command again.")
+                ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire to deactivate it, and then try this command again.")
 
     @commands.command(name="retire")
     async def retire(self, ctx):
