@@ -23,7 +23,9 @@ class Spellbook(commands.Cog):
     async def _reg(self, ctx, wizard_name, subclass, level=1):
         """Sign up to get your own spellbook!"""
         try:
-            dal.addCharacter(ctx.author.id, wizard_name, subclass, int(level))
+            db.addCharacter(ctx.author.id, wizard_name, subclass, int(level))
+            await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
+                                          "You have successfully created a spellbook for {}!".format(wizard_name))
         except error.ActiveCharExists:
             await self.sendDiscordMessage(
                 ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire <character name> to deactive it, and then try this command again.")
