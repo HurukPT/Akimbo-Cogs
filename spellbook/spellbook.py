@@ -26,6 +26,12 @@ class Spellbook(commands.Cog):
             db.addCharacter(ctx.author.id, wizard_name, subclass, int(level))
             await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
                                           "You have successfully created a spellbook for {}!".format(wizard_name))
+        except error.InvalidCharacterLevel:
+            await self.sendDiscordMessage(
+                ctx, ":warning: Error :warning:", "{} is not a valid level. Please input a level between 1 and 20".format(level))
+        except error.UnknownSubclass:
+            await self.sendDiscordMessage(
+                ctx, ":warning: Error :warning:", "{} is not a valid subclass. Please type a subclass from this list: [Abjuration, Bladesinger, Conjuration, Divination, Enchantment, Evocation, Graviturgy, Illusion, Necromancy, Ritual Caster, Scribe, Transmutation, War]".format(subclass))
         except error.ActiveCharExists:
             await self.sendDiscordMessage(
                 ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire <character name> to deactive it, and then try this command again.")

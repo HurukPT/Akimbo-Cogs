@@ -1,6 +1,6 @@
 INSERT INTO "subclass" VALUES
 	(NULL, "Abjuration", 1, 1),
-	(NULL, "Bladesinging", 0, 1),
+	(NULL, "Bladesinger", 0, 1),
 	(NULL, "Chronurgy", 0, 0),
 	(NULL, "Conjuration", 1, 1),
 	(NULL, "Divination", 1, 1),
@@ -9,7 +9,7 @@ INSERT INTO "subclass" VALUES
 	(NULL, "Graviturgy", 0, 1),
 	(NULL, "Illusion", 1, 1),
 	(NULL, "Necromancy", 1, 1),
-	(NULL, "Ritual", 0, 1),
+	(NULL, "Ritual Caster", 0, 1),
 	(NULL, "Scribe", 1, 1),
 	(NULL, "Transmutation", 1, 1),
 	(NULL, "War", 0, 1);

@@ -2,7 +2,7 @@ import math
 import sqlite3
 import os.path
 from os.path import exists
-from . import customExceptions as error
+import customExceptions as error
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = "WizardRepository.db"
@@ -34,22 +34,23 @@ def connectDatabase():
 
 
 def addCharacter(discordId, charName, subclass, level=1):
+    if level < 1 or level > 20:
+        raise error.InvalidCharacterLevel()
     db = connectDatabase()
     cursor = db.cursor()
-    currentChar = getPlayer(discordId)
-    print(currentChar)
-    if currentChar is None:
-        # school = getSubclass(subclass) is
-        if s
-        try:
-            query = f"INSERT INTO 'player' VALUES(NULL, '{discordId}', '{charName}', '{subclass}', '{level}', 1)"
-            cursor.execute(query)
-            db.commit()
-        finally:
-            cursor.close()
-            db.close()
-    else:
+    school = getSubclass(subclass)
+    if not school:
+        raise error.UnknownSubclass()
+    currentChar = getPlayer(discordId, True)
+    if currentChar:
         raise error.ActiveCharExists()
+    try:
+        query = f"INSERT INTO 'player' VALUES(NULL, '{discordId}', '{charName}', '{school[0][0]}', '{level}', 1)"
+        cursor.execute(query)
+        db.commit()
+    finally:
+        cursor.close()
+        db.close()
 
 
 def getPlayer(discordId, isActive=True):
@@ -184,6 +185,18 @@ def getPlayersWithSpell(spellName):
         return wizardList
     except:
         print(f"There was an error trying to obtain the Wizard List")
+    finally:
+        cursor.close()
+        db.close()
+
+
+def getSubclass(subclass):
+    db = connectDatabase()
+    cursor = db.cursor()
+    try:
+        query = f"SELECT * FROM subclass s WHERE s.subclass = '{subclass}' AND s.isValid = {True}"
+        cursor.execute(query)
+        return cursor.fetchmany()
     finally:
         cursor.close()
         db.close()
