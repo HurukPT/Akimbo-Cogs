@@ -8,15 +8,15 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 from redbot.core.utils.chat_formatting import pagify
 
 from .utils import *
-from . import dal as dal
-import customExceptions as error
+from . import dal as db
+from . import customExceptions as error
 
 
 class Spellbook(commands.Cog):
     """A D&D 5e Cog for Wizards to manage their spellbooks"""
 
     def __init__(self, bot):
-        dal.createDatabase()
+        db.createDatabase()
         self.bot = bot
 
     @commands.command(name="signup")
