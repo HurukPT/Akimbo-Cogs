@@ -2,6 +2,7 @@ import math
 import sqlite3
 import os.path
 from os.path import exists
+import exceptions
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = "WizardRepository.db"
@@ -14,7 +15,7 @@ def createDatabase():
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
         sql_tables_script = open(os.path.join(BASE_DIR, "createTables.sql"))
-        sql_spells_script = open(os.path.join(BASE_DIR, "insertSpells.sql"))
+        sql_spells_script = open(os.path.join(BASE_DIR, "insertData.sql"))
         try:
             cursor.executescript(sql_tables_script.read())
             cursor.executescript(sql_spells_script.read())
@@ -30,30 +31,31 @@ def connectDatabase():
     return sqlite3.connect(DB_PATH)
 
 
-def insertPlayer(discordId, charName, subclass, level=1):
+def addCharacter(discordId, charName, subclass, level=1):
     db = connectDatabase()
     cursor = db.cursor()
-    try:
-        query = f"INSERT INTO 'player' VALUES(NULL, '{discordId}', '{charName}', '{subclass}', '{level}')"
-        cursor.execute(query)
-        db.commit()
-    except sqlite3.IntegrityError as e:
-        if "player.char_name" in str(e):
-            print("{} already has a Spellbook".format(charName))
-        elif "player.discord_name" in str(e):
-            print("{} already has a character with a spellbook.".format(discordId))
-    finally:
-        cursor.close()
-        db.close()
+    currentChar = getPlayer(discordId)
+    if currentChar is None:
+        try:
+            query = f"INSERT INTO 'player' VALUES(NULL, '{discordId}', '{charName}', '{subclass}', '{level}', 1)"
+            cursor.execute(query)
+            db.commit()
+        finally:
+            cursor.close()
+            db.close()
+    else:
+        raise exceptions.ActiveCharExists()
 
 
-def getPlayer(discordId):
+def getPlayer(discordId, isActive=True):
     db = connectDatabase()
     cursor = db.cursor()
     try:
         query = f"SELECT * FROM 'player' WHERE player.discord_id = {discordId}"
+        if isActive:
+            query += f" AND player.isActive = {isActive}"
         cursor.execute(query)
-        return cursor.fetchone()
+        return cursor.fetchmany()
     except:
         print(f"Error while retrieving data for {discordId}")
     finally:

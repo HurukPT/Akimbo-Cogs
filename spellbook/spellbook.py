@@ -9,6 +9,7 @@ from redbot.core.utils.chat_formatting import pagify
 
 from .utils import *
 from .database import DAL as dal
+import exceptions
 
 
 class Spellbook(commands.Cog):
@@ -19,14 +20,15 @@ class Spellbook(commands.Cog):
         self.bot = bot
 
     @commands.command(name="signup")
-    async def _reg(self, ctx, wizard_name, subclass, level):
+    async def _reg(self, ctx, wizard_name, subclass, level=1):
         """Sign up to get your own spellbook!"""
-        user = ctx.author
-        print(wizard_name, subclass, level)
-        dal.insertPlayer(user.id, wizard_name, subclass, int(level))
+        try:
+            dal.addCharacter(ctx.author.id, wizard_name, subclass, int(level))
+        except exceptions.ActiveCharExists:
+            await self.sendDiscordMessage(
+                ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire <character name> to deactive it, and then try this command again.")
 
     @commands.command(name="spellbook")
-    @commands.guild_only()
     async def _acc(self, ctx, user: discord.Member = None):
         """Take a peek at your, or someone else's, spellbook."""
 

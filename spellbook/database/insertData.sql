@@ -1,3 +1,20 @@
+INSERT INTO "subclass" VALUES
+	(NULL, "Abjuration", 1, 1),
+	(NULL, "Bladesinging", 0, 1),
+	(NULL, "Chronurgy", 0, 0),
+	(NULL, "Conjuration", 1, 1),
+	(NULL, "Divination", 1, 1),
+	(NULL, "Enchantment", 1, 1),
+	(NULL, "Evocation", 1, 1),
+	(NULL, "Graviturgy", 0, 1),
+	(NULL, "Illusion", 1, 1),
+	(NULL, "Necromancy", 1, 1),
+	(NULL, "Ritual", 0, 1),
+	(NULL, "Scribe", 1, 1),
+	(NULL, "Transmutation", 1, 1),
+	(NULL, "War", 0, 1);
+
+
 INSERT INTO "spell" VALUES
     (NULL, "Absorb Elements", "Abjuration", 1, 0, 1),
 	(NULL, "Alarm", "Abjuration", 1, 0, 1),

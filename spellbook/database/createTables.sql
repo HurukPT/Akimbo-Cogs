@@ -1,10 +1,20 @@
-CREATE TABLE IF NOT EXISTS "player" (
-	"id"			INTEGER NOT NULL UNIQUE,
-	"discord_id"	INTEGER NOT NULL UNIQUE,
-	"char_name"		TEXT NOT NULL UNIQUE,
-	"wizard_school"	TEXT NOT NULL,
-	"wizard_level"	INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS "subclass" (
+	"id"            INTEGER NOT NULL UNIQUE,
+	"subclass"      TEXT NOT NULL UNIQUE,
+	"isSavant"   	INTEGER NOT NULL,
+	"isValid"		INTEGER NOT NULL DEFAULT 1,
 	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+CREATE TABLE IF NOT EXISTS "player" (
+	"id"				INTEGER NOT NULL UNIQUE,
+	"discord_id"		INTEGER NOT NULL UNIQUE,
+	"char_name"			TEXT NOT NULL UNIQUE,
+	"wizard_subclass"	INTEGER NOT NULL,
+	"wizard_level"		INTEGER NOT NULL,
+	"isActive"			INTEGER NOT NULL DEFAULT 1,
+	PRIMARY KEY("id" AUTOINCREMENT)
+	FOREIGN KEY("wizard_subclass") REFERENCES "subclass"("id")
 );
 
 CREATE TABLE IF NOT EXISTS "spell" (
