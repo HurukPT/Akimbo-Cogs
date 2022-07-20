@@ -237,6 +237,3 @@ def getSubclass(subclass):
     finally:
         cursor.close()
         db.close()
-
-
-unretireCharacter(155363631498919936, "Oonen Dwinanea")
