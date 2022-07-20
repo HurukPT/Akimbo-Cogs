@@ -21,7 +21,7 @@ class Spellbook(commands.Cog):
     async def _reg(self, ctx, wizard_name, subclass, level=1):
         """Sign up to get your own spellbook!"""
         user = ctx.author
-        dal.insertPlayer(user.id, wizard_name, subclass, level)
+        dal.insertPlayer(user.id, wizard_name, subclass, int(level))
         # if dal.getPlayer(user.id) is None:
         # db.append(user.id)
         # await self.config.guild(server).db.set(db)
