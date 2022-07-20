@@ -2,7 +2,8 @@ import math
 import sqlite3
 import os.path
 from os.path import exists
-from . import customExceptions as error
+#from . import customExceptions as error
+import customExceptions as error
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = "WizardRepository.db"
@@ -64,10 +65,26 @@ def retireCharacter(discordId):
     db = connectDatabase()
     cursor = db.cursor()
     try:
-        query = f"UPDATE TABLE 'player' p SET p.isActive = {False} WHERE p.discord_id = '{discordId}' and p.isActive = {True}"
+        query = f"UPDATE 'player' SET isActive = {False} WHERE discord_id = '{discordId}' AND isActive = {True}"
         cursor.execute(query)
         db.commit()
-        return currentChar[2]
+        return currentChar[0][2]
+    finally:
+        cursor.close()
+        db.close()
+
+
+def unretireCharacter(discordId, charName):
+    currentChar = getPlayerCharacters(discordId, True)
+    if currentChar:
+        raise error.ActiveCharExists()
+    db = connectDatabase()
+    cursor = db.cursor()
+    try:
+        query = f"UPDATE 'player' SET isActive = {True} WHERE discord_id = '{discordId}' AND char_name = '{charName}' AND isActive = {False}"
+        cursor.execute(query)
+        db.commit()
+        return cursor.rowcount > 1
     finally:
         cursor.close()
         db.close()
@@ -220,3 +237,6 @@ def getSubclass(subclass):
     finally:
         cursor.close()
         db.close()
+
+
+unretireCharacter(155363631498919936, "Oonen Dwinanea")

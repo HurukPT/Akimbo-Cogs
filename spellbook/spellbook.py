@@ -20,12 +20,12 @@ class Spellbook(commands.Cog):
         self.bot = bot
 
     @commands.command(name="signup")
-    async def _reg(self, ctx, wizard_name, subclass, level):
+    async def _reg(self, ctx, charName, subclass, level):
         """Sign up to get your own spellbook!"""
         try:
-            db.addCharacter(ctx.author.id, wizard_name, subclass, level)
+            db.addCharacter(ctx.author.id, charName, subclass, level)
             await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
-                                          "You have successfully created a spellbook for {}!".format(wizard_name))
+                                          "You have successfully created a spellbook for {}!".format(charName))
         except error.InvalidCharacterLevel:
             await self.sendDiscordMessage(
                 ctx, ":warning: Error :warning:", "{} is not a valid level. Please input a level between 1 and 20".format(level))
@@ -40,12 +40,26 @@ class Spellbook(commands.Cog):
     async def retire(self, ctx):
         """Retires your current active character, so you can create another"""
         try:
-            wizard_name = db.retireCharacter(ctx.author.id)
+            charName = db.retireCharacter(ctx.author.id)
             await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
-                                          "You have successfully retired {}!".format(wizard_name))
+                                          "You have successfully retired {}!".format(charName))
         except error.NoActiveCharacter:
             await self.sendDiscordMessage(
                 ctx, ":warning: Error :warning:", "You don't have any active character.")
+
+    @commands.command(name="unretire")
+    async def unretire(self, ctx, charName):
+        """Takes one of your current inactive characters out of retirement."""
+        try:
+            if db.unretireCharacter(ctx.author.id, charName):
+                await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
+                                              "You have successfully unretired {}!".format(charName))
+            else:
+                await self.sendDiscordMessage(ctx, ":warning: Error :warning:",
+                                              "You don't have a character named {}.".format(charName))
+        except error.ActiveCharExists:
+            await self.sendDiscordMessage(
+                ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire to deactivate it, and then try this command again.")
 
     @commands.command(name="spellbook")
     async def _acc(self, ctx, user: discord.Member = None):
