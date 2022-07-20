@@ -7,38 +7,27 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 from redbot.core.utils.chat_formatting import pagify
 
 from .utils import *
+from .database import DAL as dal
 
 
 class Spellbook(commands.Cog):
     """A D&D 5e Cog for Wizards to manage their spellbooks"""
 
     def __init__(self, bot):
+        dal.createDatabase()
         self.bot = bot
-        default_member = {
-            "Characterpic": None,
-            "Spell": []
-        }
-        default_guild = {
-            "db": []
-        }
-        self.config = Config.get_conf(self, identifier=42)
-        self.config.register_guild(**default_guild)
-        self.config.register_member(**default_member)
 
     @commands.command(name="signup")
-    @commands.guild_only()
     async def _reg(self, ctx):
         """Sign up to get your own spellbook!"""
-
-        server = ctx.guild
         user = ctx.author
-        db = await self.config.guild(server).db()
-        if user.id not in db:
-            db.append(user.id)
-            await self.config.guild(server).db.set(db)
-            await self.sendDiscordMessage(ctx, ":mage: Congrats! :mage:", "You have created your spellbook for **{}**, {}.".format(server.name, user.mention))
-        else:
-            await self.sendDiscordMessage(ctx, ":warning: Error :warning:", "Opps, it seems like you already have a spellbook, {}.".format(user.mention))
+        dal.insertPlayer(user.id)
+        # if dal.getPlayer(user.id) is None:
+        # db.append(user.id)
+        # await self.config.guild(server).db.set(db)
+        # await self.sendDiscordMessage(ctx, ":mage: Congrats! :mage:", "You have created your spellbook for **{}**, {}.".format(server.name, user.mention))
+        # else:
+        # await self.sendDiscordMessage(ctx, ":warning: Error :warning:", "Opps, it seems like you already have a spellbook, {}.".format(user.mention))
 
     @commands.command(name="spellbook")
     @commands.guild_only()
