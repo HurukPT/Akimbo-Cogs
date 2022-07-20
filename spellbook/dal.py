@@ -84,7 +84,7 @@ def unretireCharacter(discordId, charName):
         query = f"UPDATE 'player' SET isActive = {True} WHERE discord_id = '{discordId}' AND char_name = '{charName}' AND isActive = {False}"
         cursor.execute(query)
         db.commit()
-        return cursor.rowcount > 1
+        return cursor.rowcount > 0
     finally:
         cursor.close()
         db.close()
