@@ -18,16 +18,12 @@ class Spellbook(commands.Cog):
         self.bot = bot
 
     @commands.command(name="signup")
-    async def _reg(self, ctx, wizard_name, subclass, level=1):
+    async def _reg(self, ctx, info):
         """Sign up to get your own spellbook!"""
         user = ctx.author
-        dal.insertPlayer(user.id, wizard_name, subclass, int(level))
-        # if dal.getPlayer(user.id) is None:
-        # db.append(user.id)
-        # await self.config.guild(server).db.set(db)
-        # await self.sendDiscordMessage(ctx, ":mage: Congrats! :mage:", "You have created your spellbook for **{}**, {}.".format(server.name, user.mention))
-        # else:
-        # await self.sendDiscordMessage(ctx, ":warning: Error :warning:", "Opps, it seems like you already have a spellbook, {}.".format(user.mention))
+        infoList = str(info).split("-")
+        dal.insertPlayer(user.id, infoList[0].replace(
+            "_", " "), infoList[1], infoList[2])
 
     @commands.command(name="spellbook")
     @commands.guild_only()
@@ -102,13 +98,11 @@ class Spellbook(commands.Cog):
                                           "{}'s Spellbook is empty.".format(user.mention))
 
     @commands.group(name="add")
-    @commands.guild_only()
     async def add(self, ctx):
         """Update your Spellbook"""
         pass
 
     @add.command(name="spells")
-    @commands.guild_only()
     async def addSpell(self, ctx, *, spell):
         """Which spell(s) do you want to add?"""
 
@@ -161,13 +155,11 @@ class Spellbook(commands.Cog):
                                               "The following {} not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format("spells are" if(len(new_spell_list_invalid) > 1) else "spell is", ", ".join(new_spell_list_invalid)))
 
     @commands.group(name="remove")
-    @commands.guild_only()
     async def remove(self, ctx):
         """Rips pages from your Spellbook"""
         pass
 
     @remove.command(name="spells")
-    @commands.guild_only()
     async def removeSpells(self, ctx, *, spell):
         """Rip pages from your spellbook, as hard as it is to do it"""
 
@@ -224,7 +216,6 @@ class Spellbook(commands.Cog):
                     ctx, ":warning: Oh no! :warning:", "The following {} not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format("spells are" if (len(new_spell_list_invalid)) else "spell is", " ".join(new_spell_list_invalid)))
 
     @commands.command()
-    @commands.guild_only()
     async def filter(self, ctx, *, filter):
         """Searches for Wizards with knowledge of a particular spell"""
 
