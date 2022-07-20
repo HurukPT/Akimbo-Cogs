@@ -18,10 +18,10 @@ class Spellbook(commands.Cog):
         self.bot = bot
 
     @commands.command(name="signup")
-    async def _reg(self, ctx, wizard_name, subclass, level: int):
+    async def _reg(self, ctx, wizard_name, subclass, level):
         """Sign up to get your own spellbook!"""
         user = ctx.author
-        dal.insertPlayer(user.id, wizard_name, subclass, level)
+        dal.insertPlayer(user.id, wizard_name, subclass, int(level))
 
     @commands.command(name="spellbook")
     @commands.guild_only()
