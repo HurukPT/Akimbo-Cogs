@@ -33,7 +33,7 @@ def connectDatabase():
     return sqlite3.connect(DB_PATH)
 
 
-def addCharacter(discordId, charName, subclass, level=1):
+def addCharacter(discordId, charName, subclass, level):
     try:
         int(level)
     except ValueError:
