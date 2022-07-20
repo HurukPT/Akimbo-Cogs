@@ -32,6 +32,7 @@ def connectDatabase():
 
 def insertPlayer(discordId, charName, subclass, level=1):
     db = connectDatabase()
+    print(DB_PATH)
     cursor = db.cursor()
     try:
         query = f"INSERT INTO 'player' VALUES(NULL, '{discordId}', '{charName}', '{subclass}', '{level}')"
