@@ -1,3 +1,4 @@
+from re import sub
 import discord
 from tabulate import tabulate
 
@@ -21,6 +22,7 @@ class Spellbook(commands.Cog):
     async def _reg(self, ctx, wizard_name, subclass, level):
         """Sign up to get your own spellbook!"""
         user = ctx.author
+        print(wizard_name, subclass, level)
         dal.insertPlayer(user.id, wizard_name, subclass, int(level))
 
     @commands.command(name="spellbook")
