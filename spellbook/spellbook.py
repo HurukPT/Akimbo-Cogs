@@ -36,6 +36,17 @@ class Spellbook(commands.Cog):
             await self.sendDiscordMessage(
                 ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire <character name> to deactivate it, and then try this command again.")
 
+    @commands.command(name="retire")
+    async def retire(self, ctx):
+        """Retires your current active character, so you can create another"""
+        try:
+            wizard_name = db.retire(ctx.author.id)
+            await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
+                                          "You have successfully retired {}!".format(wizard_name))
+        except error.NoActiveCharacter:
+            await self.sendDiscordMessage(
+                ctx, ":warning: Error :warning:", "You don't have any active character.")
+
     @commands.command(name="spellbook")
     async def _acc(self, ctx, user: discord.Member = None):
         """Take a peek at your, or someone else's, spellbook."""

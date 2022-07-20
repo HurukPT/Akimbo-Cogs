@@ -45,7 +45,7 @@ def addCharacter(discordId, charName, subclass, level):
     school = getSubclass(subclass)
     if not school:
         raise error.UnknownSubclass()
-    currentChar = getPlayer(discordId, True)
+    currentChar = getPlayerCharacters(discordId, True)
     if currentChar:
         raise error.ActiveCharExists()
     try:
@@ -57,7 +57,23 @@ def addCharacter(discordId, charName, subclass, level):
         db.close()
 
 
-def getPlayer(discordId, isActive=True):
+def retireCharacter(discordId):
+    currentChar = getPlayerCharacters(discordId, True)
+    if not currentChar:
+        raise error.NoActiveCharacter()
+    db = connectDatabase()
+    cursor = db.cursor()
+    try:
+        query = f"UPDATE TABLE 'player' p SET p.isActive = {False} WHERE p.discord_id = '{discordId}' and p.isActive = {True}"
+        cursor.execute(query)
+        db.commit()
+        return currentChar[2]
+    finally:
+        cursor.close()
+        db.close()
+
+
+def getPlayerCharacters(discordId, isActive=True):
     db = connectDatabase()
     cursor = db.cursor()
     try:
@@ -77,7 +93,7 @@ def setLevelForPlayer(discordId, level):
     if (level >= 0 and level <= 20):
         db = connectDatabase()
         cursor = db.cursor()
-        player = getPlayer(discordId)
+        player = getPlayerCharacters(discordId)
         if player is not None:
             try:
                 query = f"UPDATE 'player' SET wizard_level = {level} WHERE discord_id = {discordId}"
@@ -95,7 +111,7 @@ def setLevelForPlayer(discordId, level):
 def getSpellListForPlayer(discordId):
     db = connectDatabase()
     cursor = db.cursor()
-    player = getPlayer(discordId)
+    player = getPlayerCharacters(discordId)
     if player is not None:
         try:
             query = f"SELECT * FROM 'spell' where isValid = {True} AND level <= {math.ceil(player[4] / 2)} "
@@ -115,7 +131,7 @@ def getSpellListForPlayer(discordId):
 def getSpellFromPlayer(discordId):
     db = connectDatabase()
     cursor = db.cursor()
-    player = getPlayer(discordId)
+    player = getPlayerCharacters(discordId)
     if player is not None:
         try:
             query = f"SELECT s.* FROM 'spell' s JOIN 'player_spell' ps ON ps.spell = s.id WHERE isValid = {True} AND ps.player = {player[1]}"
@@ -133,7 +149,7 @@ def getSpellFromPlayer(discordId):
 def addSpellsToPlayer(discordId, spellListIds):
     db = connectDatabase()
     cursor = db.cursor()
-    player = getPlayer(1)
+    player = getPlayerCharacters(1)
     if player is not None:
         try:
             query = f"INSERT INTO 'player_spell' VALUES(NULL, {discordId}, ?)"
@@ -149,7 +165,7 @@ def addSpellsToPlayer(discordId, spellListIds):
 def removeSpellsFromPlayer(discordId, spellListIds):
     db = connectDatabase()
     cursor = db.cursor()
-    player = getPlayer(discordId)
+    player = getPlayerCharacters(discordId)
     if player is not None:
         try:
             query = f"DELETE FROM 'player_spell' WHERE player = {player[1]} AND spell = ?"

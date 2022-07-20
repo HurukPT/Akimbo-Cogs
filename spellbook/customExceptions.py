@@ -8,3 +8,7 @@ class UnknownSubclass(Exception):
 
 class InvalidCharacterLevel(Exception):
     pass
+
+
+class NoActiveCharacter(Exception):
+    pass
