@@ -15,9 +15,9 @@ def createDatabase():
         connection = sqlite3.connect(DB_PATH)
         cursor = connection.cursor()
         sql_tables_script = open(os.path.join(
-            BASE_DIR, "/database/createTables.sql"))
+            BASE_DIR, "./database/createTables.sql"))
         sql_spells_script = open(os.path.join(
-            BASE_DIR, "/database/insertData.sql"))
+            BASE_DIR, "./database/insertData.sql"))
         try:
             cursor.executescript(sql_tables_script.read())
             cursor.executescript(sql_spells_script.read())
