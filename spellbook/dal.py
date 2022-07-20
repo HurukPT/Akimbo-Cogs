@@ -2,8 +2,8 @@ import math
 import sqlite3
 import os.path
 from os.path import exists
-#from . import customExceptions as error
-import customExceptions as error
+from . import customExceptions as error
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = "WizardRepository.db"
