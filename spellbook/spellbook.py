@@ -8,8 +8,8 @@ from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 from redbot.core.utils.chat_formatting import pagify
 
 from .utils import *
-from .database import DAL as dal
-import exceptions
+from . import dal as dal
+import customExceptions as error
 
 
 class Spellbook(commands.Cog):
@@ -24,7 +24,7 @@ class Spellbook(commands.Cog):
         """Sign up to get your own spellbook!"""
         try:
             dal.addCharacter(ctx.author.id, wizard_name, subclass, int(level))
-        except exceptions.ActiveCharExists:
+        except error.ActiveCharExists:
             await self.sendDiscordMessage(
                 ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire <character name> to deactive it, and then try this command again.")
 

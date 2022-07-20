@@ -2,7 +2,7 @@ import math
 import sqlite3
 import os.path
 from os.path import exists
-import exceptions
+import customExceptions as error
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = "WizardRepository.db"
@@ -46,7 +46,7 @@ def addCharacter(discordId, charName, subclass, level=1):
             cursor.close()
             db.close()
     else:
-        raise exceptions.ActiveCharExists()
+        raise error.ActiveCharExists()
 
 
 def getPlayer(discordId, isActive=True):
