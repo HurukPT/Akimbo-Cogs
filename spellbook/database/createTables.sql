@@ -8,13 +8,14 @@ CREATE TABLE IF NOT EXISTS "subclass" (
 
 CREATE TABLE IF NOT EXISTS "player" (
 	"id"				INTEGER NOT NULL UNIQUE,
-	"discord_id"		INTEGER NOT NULL UNIQUE,
-	"char_name"			TEXT NOT NULL UNIQUE,
+	"discord_id"		INTEGER NOT NULL,
+	"char_name"			TEXT NOT NULL,
 	"wizard_subclass"	INTEGER NOT NULL,
 	"wizard_level"		INTEGER NOT NULL,
 	"isActive"			INTEGER NOT NULL DEFAULT 1,
 	PRIMARY KEY("id" AUTOINCREMENT)
-	FOREIGN KEY("wizard_subclass") REFERENCES "subclass"("id")
+	FOREIGN KEY("wizard_subclass") REFERENCES "subclass"("id"),
+	CONSTRAINT unqPlayerChar UNIQUE(discord_id, char_name)
 );
 
 CREATE TABLE IF NOT EXISTS "spell" (
