@@ -35,7 +35,7 @@ def connectDatabase():
 
 def addCharacter(discordId, charName, subclass, level):
     try:
-        int(level)
+        level = int(level)
     except ValueError:
         raise error.InvalidCharacterLevel()
     if level < 1 or level > 20:
