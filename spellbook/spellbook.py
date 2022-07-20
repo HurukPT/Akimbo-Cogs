@@ -20,10 +20,10 @@ class Spellbook(commands.Cog):
         self.bot = bot
 
     @commands.command(name="signup")
-    async def _reg(self, ctx, wizard_name, subclass, level=1):
+    async def _reg(self, ctx, wizard_name, subclass, level):
         """Sign up to get your own spellbook!"""
         try:
-            db.addCharacter(ctx.author.id, wizard_name, subclass, int(level))
+            db.addCharacter(ctx.author.id, wizard_name, subclass, level)
             await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
                                           "You have successfully created a spellbook for {}!".format(wizard_name))
         except error.InvalidCharacterLevel:
