@@ -53,6 +53,8 @@ def addCharacter(discordId, charName, subclass, level):
         query = f"INSERT INTO 'player' VALUES(NULL, '{discordId}', '{charName}', '{school[0][0]}', '{level}', 1)"
         cursor.execute(query)
         db.commit()
+    except sqlite3.IntegrityError:
+        raise error.DuplicateCharacter()
     finally:
         cursor.close()
         db.close()
@@ -81,7 +83,7 @@ def unretireCharacter(discordId, charName):
     db = connectDatabase()
     cursor = db.cursor()
     try:
-        query = f"UPDATE 'player' SET isActive = {True} WHERE discord_id = '{discordId}' AND char_name = '{charName}' AND isActive = {False}"
+        query = f"UPDATE 'player' SET isActive = {True} WHERE discord_id = '{discordId}' AND LOWER(char_name) = LOWER('{charName}') AND isActive = {False}"
         cursor.execute(query)
         db.commit()
         return cursor.rowcount > 0
@@ -94,7 +96,7 @@ def getPlayerCharacters(discordId, isActive=True):
     db = connectDatabase()
     cursor = db.cursor()
     try:
-        query = f"SELECT * FROM 'player' WHERE player.discord_id = {discordId}"
+        query = f"SELECT * FROM 'player' WHERE LOWER(player.discord_id) = LOWER({discordId})"
         if isActive:
             query += f" AND player.isActive = {isActive}"
         cursor.execute(query)
@@ -131,7 +133,7 @@ def getSpellListForPlayer(discordId):
     player = getPlayerCharacters(discordId)
     if player is not None:
         try:
-            query = f"SELECT * FROM 'spell' where isValid = {True} AND level <= {math.ceil(player[4] / 2)} "
+            query = f"SELECT * FROM 'spell' WHERE isValid = {True} AND level <= {math.ceil(player[4] / 2)} "
             if "Graviturgist" not in player:
                 query = query + f"AND isDunamancy = {False}"
             cursor.execute(query)
@@ -151,7 +153,7 @@ def getSpellFromPlayer(discordId):
     player = getPlayerCharacters(discordId)
     if player is not None:
         try:
-            query = f"SELECT s.* FROM 'spell' s JOIN 'player_spell' ps ON ps.spell = s.id WHERE isValid = {True} AND ps.player = {player[1]}"
+            query = f"SELECT s.* FROM 'spell' s JOIN 'player_spell' ps ON ps.spell = s.id WHERE isValid = {True} AND LOWER(ps.player) = LOWER({player[1]})"
             cursor.execute(query)
             return cursor.fetchall()
         except:
@@ -185,7 +187,7 @@ def removeSpellsFromPlayer(discordId, spellListIds):
     player = getPlayerCharacters(discordId)
     if player is not None:
         try:
-            query = f"DELETE FROM 'player_spell' WHERE player = {player[1]} AND spell = ?"
+            query = f"DELETE FROM 'player_spell' WHERE LOWER(player) = LOWER({player[1]}) AND LOWER(spell) = LOWER(?)"
             cursor.executemany(query, spellListIds)
             db.commit()
         except:
@@ -216,7 +218,7 @@ def getPlayersWithSpell(spellName):
     cursor = db.cursor()
     spell = findSpellByName(spellName)
     try:
-        query = f"SELECT p.discord_id, p.char_name FROM player p JOIN player_spell ps ON ps.player = p.id WHERE ps.spell = '{spell[0]}'"
+        query = f"SELECT p.discord_id, p.char_name FROM player p JOIN player_spell ps ON ps.player = p.id WHERE LOWER(ps.spell) = LOWER('{spell[0]}')"
         cursor.execute(query)
         wizardList = cursor.fetchmany()
         return wizardList

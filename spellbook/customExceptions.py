@@ -12,3 +12,7 @@ class InvalidCharacterLevel(Exception):
 
 class NoActiveCharacter(Exception):
     pass
+
+
+class DuplicateCharacter(Exception):
+    pass

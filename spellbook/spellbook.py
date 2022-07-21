@@ -35,6 +35,9 @@ class Spellbook(commands.Cog):
         except error.ActiveCharExists:
             await self.sendDiscordMessage(
                 ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire to deactivate it, and then try this command again.")
+        except error.DuplicateCharacter:
+            await self.sendDiscordMessage(
+                ctx, ":warning: Error :warning:", "You already have a character with the name '{}'. Please use the !unretire command, or create a character with a different name.".format(charName))
 
     @commands.command(name="retire")
     async def retire(self, ctx):
@@ -60,6 +63,63 @@ class Spellbook(commands.Cog):
         except error.ActiveCharExists:
             await self.sendDiscordMessage(
                 ctx, ":warning: Error :warning:", "You already have an active character. Please use !retire to deactivate it, and then try this command again.")
+
+    @commands.group(name="add")
+    async def add(self, ctx):
+        """Update your Spellbook"""
+        pass
+
+    @add.command(name="spells")
+    async def addSpell(self, ctx, *, spell):
+        """Which spell(s) do you want to add?"""
+
+        # making a set so that duplicate spells in the same call are not considered
+        new_spell_list = processStringToList(spell)
+        new_spell_list_valid = []
+        new_spell_list_invalid = []
+        new_spell_list_duplicate = []
+        server = ctx.guild
+        user = ctx.author
+        prefix = ctx.prefix
+        guild_group = self.config.member(user)
+        db = await self.config.guild(server).db()
+        userdata = await self.config.member(user).all()
+
+        if user.id not in db:
+            await self.sendDiscordMessage(
+                ctx, ":warning: Error :warning:", "Sadly, you can't add spells without having a spellbook first. \n\nYou can create your spellbook by saying `{}signup` and you'll be all set.".format(prefix))
+        else:
+            for new_spell in new_spell_list:
+                # checks if it's a valid spell
+                if not isSpellValid(new_spell):
+                    new_spell_list_invalid.append(new_spell)
+                    continue
+                else:
+                    # checks if the user already has this spell
+                    if new_spell in userdata["Spell"]:
+                        new_spell_list_duplicate.append(new_spell)
+                        continue
+                    else:
+                        new_spell_list_valid.append(new_spell)
+                        continue
+
+            # save the valid spells, if any
+            if(len(new_spell_list_valid) > 0):
+                async with guild_group.Spell() as SpellGroup:
+                    SpellGroup.extend(new_spell_list_valid)
+                    SpellGroup.sort()
+                    await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
+                                                  "You have copied the following {} into your Spellbook:\n{}".format("spells" if(len(new_spell_list_valid) > 1) else "spell", ", ".join(new_spell_list_valid)))
+
+            # send the duplicate spells, if any
+            if(len(new_spell_list_duplicate) > 0):
+                await self.sendDiscordMessage(ctx, ":coin: I'm saving you money! :coin:",
+                                              "You already had {} in your Spellbook: \n{}".format("these spells" if(len(new_spell_list_duplicate) > 1) else "this spell", ", ".join(new_spell_list_duplicate)))
+
+            # send the invalid spells, if any
+            if(len(new_spell_list_invalid) > 0):
+                await self.sendDiscordMessage(ctx, ":warning: Oh no! :warning:",
+                                              "The following {} not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format("spells are" if(len(new_spell_list_invalid) > 1) else "spell is", ", ".join(new_spell_list_invalid)))
 
     @commands.command(name="spellbook")
     async def _acc(self, ctx, user: discord.Member = None):
@@ -131,63 +191,6 @@ class Spellbook(commands.Cog):
         else:
             await self.sendDiscordMessage(ctx, ":smiling_face_with_tear: Sad Wizard is sad :smiling_face_with_tear:",
                                           "{}'s Spellbook is empty.".format(user.mention))
-
-    @commands.group(name="add")
-    async def add(self, ctx):
-        """Update your Spellbook"""
-        pass
-
-    @add.command(name="spells")
-    async def addSpell(self, ctx, *, spell):
-        """Which spell(s) do you want to add?"""
-
-        # making a set so that duplicate spells in the same call are not considered
-        new_spell_list = processStringToList(spell)
-        new_spell_list_valid = []
-        new_spell_list_invalid = []
-        new_spell_list_duplicate = []
-        server = ctx.guild
-        user = ctx.author
-        prefix = ctx.prefix
-        guild_group = self.config.member(user)
-        db = await self.config.guild(server).db()
-        userdata = await self.config.member(user).all()
-
-        if user.id not in db:
-            await self.sendDiscordMessage(
-                ctx, ":warning: Error :warning:", "Sadly, you can't add spells without having a spellbook first. \n\nYou can create your spellbook by saying `{}signup` and you'll be all set.".format(prefix))
-        else:
-            for new_spell in new_spell_list:
-                # checks if it's a valid spell
-                if not isSpellValid(new_spell):
-                    new_spell_list_invalid.append(new_spell)
-                    continue
-                else:
-                    # checks if the user already has this spell
-                    if new_spell in userdata["Spell"]:
-                        new_spell_list_duplicate.append(new_spell)
-                        continue
-                    else:
-                        new_spell_list_valid.append(new_spell)
-                        continue
-
-            # save the valid spells, if any
-            if(len(new_spell_list_valid) > 0):
-                async with guild_group.Spell() as SpellGroup:
-                    SpellGroup.extend(new_spell_list_valid)
-                    SpellGroup.sort()
-                    await self.sendDiscordMessage(ctx, ":sparkles: Success! :sparkles:",
-                                                  "You have copied the following {} into your Spellbook:\n{}".format("spells" if(len(new_spell_list_valid) > 1) else "spell", ", ".join(new_spell_list_valid)))
-
-            # send the duplicate spells, if any
-            if(len(new_spell_list_duplicate) > 0):
-                await self.sendDiscordMessage(ctx, ":coin: I'm saving you money! :coin:",
-                                              "You already had {} in your Spellbook: \n{}".format("these spells" if(len(new_spell_list_duplicate) > 1) else "this spell", ", ".join(new_spell_list_duplicate)))
-
-            # send the invalid spells, if any
-            if(len(new_spell_list_invalid) > 0):
-                await self.sendDiscordMessage(ctx, ":warning: Oh no! :warning:",
-                                              "The following {} not valid:\n{}\nPlease make sure you spelled it right\nUsed ' and -'s correctly.\nPlease make sure your spell is in [this list](https://pastebin.com/YS7NmYqh)".format("spells are" if(len(new_spell_list_invalid) > 1) else "spell is", ", ".join(new_spell_list_invalid)))
 
     @commands.group(name="remove")
     async def remove(self, ctx):
