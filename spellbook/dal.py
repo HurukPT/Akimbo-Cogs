@@ -1,3 +1,4 @@
+from curses import curs_set
 import math
 import sqlite3
 import os.path
@@ -41,8 +42,6 @@ def addCharacter(discordId, charName, subclass, level):
         raise error.InvalidCharacterLevel()
     if level < 1 or level > 20:
         raise error.InvalidCharacterLevel()
-    db = connectDatabase()
-    cursor = db.cursor()
     school = getSubclass(subclass)
     if not school:
         raise error.UnknownSubclass()
@@ -50,6 +49,8 @@ def addCharacter(discordId, charName, subclass, level):
     if currentChar:
         raise error.ActiveCharExists()
     try:
+        db = connectDatabase()
+        cursor = db.cursor()
         query = f"INSERT INTO 'player' VALUES(NULL, '{discordId}', '{charName}', '{school[0][0]}', '{level}', 1)"
         cursor.execute(query)
         db.commit()
@@ -64,9 +65,9 @@ def retireCharacter(discordId):
     currentChar = getPlayerCharacters(discordId, True)
     if not currentChar:
         raise error.NoActiveCharacter()
-    db = connectDatabase()
-    cursor = db.cursor()
     try:
+        db = connectDatabase()
+        cursor = db.cursor()
         query = f"UPDATE 'player' SET isActive = {False} WHERE discord_id = '{discordId}' AND isActive = {True}"
         cursor.execute(query)
         db.commit()
@@ -80,9 +81,9 @@ def unretireCharacter(discordId, charName):
     currentChar = getPlayerCharacters(discordId, True)
     if currentChar:
         raise error.ActiveCharExists()
-    db = connectDatabase()
-    cursor = db.cursor()
     try:
+        db = connectDatabase()
+        cursor = db.cursor()
         query = f"UPDATE 'player' SET isActive = {True} WHERE discord_id = '{discordId}' AND LOWER(char_name) = LOWER('{charName}') AND isActive = {False}"
         cursor.execute(query)
         db.commit()
@@ -93,76 +94,73 @@ def unretireCharacter(discordId, charName):
 
 
 def getPlayerCharacters(discordId, isActive=True):
-    db = connectDatabase()
-    cursor = db.cursor()
     try:
-        query = f"SELECT * FROM 'player' WHERE LOWER(player.discord_id) = LOWER({discordId})"
+        db = connectDatabase()
+        cursor = db.cursor()
+        query = f"SELECT * FROM 'player' WHERE player.discord_id = {discordId}"
         if isActive:
             query += f" AND player.isActive = {isActive}"
         cursor.execute(query)
-        return cursor.fetchmany()
-    except:
-        print(f"Error while retrieving data for {discordId}")
+        return cursor.fetchall()
     finally:
         cursor.close()
         db.close()
 
 
 def setLevelForPlayer(discordId, level):
-    if (level >= 0 and level <= 20):
+    try:
+        level = int(level)
+    except ValueError:
+        raise error.InvalidCharacterLevel()
+    if level < 1 or level > 20:
+        raise error.InvalidCharacterLevel()
+    currentChar = getPlayerCharacters(discordId, True)
+    if not currentChar:
+        raise error.NoActiveCharacter()
+    try:
         db = connectDatabase()
         cursor = db.cursor()
-        player = getPlayerCharacters(discordId)
-        if player is not None:
-            try:
-                query = f"UPDATE 'player' SET wizard_level = {level} WHERE discord_id = {discordId}"
-                cursor.execute(query)
-                db.commit()
-                return True
-            except:
-                print(f"Error while updating the level for {player[2]}")
-            finally:
-                cursor.close()
-                db.close()
-    return False
+        query = f"UPDATE 'player' SET wizard_level = {level} WHERE discord_id = {discordId}"
+        cursor.execute(query)
+        db.commit()
+    finally:
+        cursor.close()
+        db.close()
 
 
 def getSpellListForPlayer(discordId):
-    db = connectDatabase()
-    cursor = db.cursor()
-    player = getPlayerCharacters(discordId)
-    if player is not None:
-        try:
-            query = f"SELECT * FROM 'spell' WHERE isValid = {True} AND level <= {math.ceil(player[4] / 2)} "
-            if "Graviturgist" not in player:
-                query = query + f"AND isDunamancy = {False}"
-            cursor.execute(query)
-            return cursor.fetchall()
-        except:
-            print(f"Error while fetching spells for {player[1]}")
-        finally:
-            cursor.close()
-            db.close()
-    else:
-        print("Player does not exist")
+    currentChar = getPlayerCharacters(discordId, True)
+    if not currentChar:
+        raise error.NoActiveCharacter()
+    try:
+        db = connectDatabase()
+        cursor = db.cursor()
+        query = f"SELECT * FROM 'spell' WHERE isValid = {True} AND level <= {math.ceil(currentChar[4] / 2)} "
+        if "Graviturgist" not in currentChar:
+            query = query + f"AND isDunamancy = {False}"
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        db.close()
 
 
-def getSpellFromPlayer(discordId):
-    db = connectDatabase()
-    cursor = db.cursor()
-    player = getPlayerCharacters(discordId)
-    if player is not None:
-        try:
-            query = f"SELECT s.* FROM 'spell' s JOIN 'player_spell' ps ON ps.spell = s.id WHERE isValid = {True} AND LOWER(ps.player) = LOWER({player[1]})"
-            cursor.execute(query)
-            return cursor.fetchall()
-        except:
-            print(f"Error while fetching spells for {player[1]}")
-        finally:
-            cursor.close()
-            db.close()
-    else:
-        print("Player does not exist")
+def getSpellbook(discordId, charName):
+    currentChar = getPlayerCharacters(discordId, True)
+    if not currentChar:
+        raise error.NoActiveCharacter()
+    targetChar = getCharacter(charName)
+    if not targetChar:
+        raise error.UnknownCharacter()
+    try:
+        db = connectDatabase()
+        cursor = db.cursor()
+        query = f"SELECT s.name FROM spell s JOIN player_spell ps ON ps.spell = s.id JOIN player p ON ps.player = p.id WHERE s.isValid = 1 AND LOWER(p.char_name) = LOWER('{targetChar[0][1]}')"
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        db.close()
 
 
 def addSpellsToPlayer(discordId, spellListIds):
@@ -171,11 +169,9 @@ def addSpellsToPlayer(discordId, spellListIds):
     player = getPlayerCharacters(1)
     if player is not None:
         try:
-            query = f"INSERT INTO 'player_spell' VALUES(NULL, {discordId}, ?)"
+            query = f"INSERT INTO player_spell VALUES(NULL, {discordId}, ?)"
             cursor.executemany(query, spellListIds)
             db.commit()
-        except:
-            print(f"Error while inserting spells for {player[2]}")
         finally:
             cursor.close()
             db.close()
@@ -187,11 +183,9 @@ def removeSpellsFromPlayer(discordId, spellListIds):
     player = getPlayerCharacters(discordId)
     if player is not None:
         try:
-            query = f"DELETE FROM 'player_spell' WHERE LOWER(player) = LOWER({player[1]}) AND LOWER(spell) = LOWER(?)"
+            query = f"DELETE FROM player_spell WHERE LOWER(player) = LOWER({player[1]}) AND LOWER(spell) = LOWER(?)"
             cursor.executemany(query, spellListIds)
             db.commit()
-        except:
-            print(f"Error while removing spells for {player[2]}")
         finally:
             cursor.close()
             db.close()
@@ -201,26 +195,24 @@ def findSpellByName(spellName):
     db = connectDatabase()
     cursor = db.cursor()
     try:
-        query = f"SELECT * FROM 'spell' WHERE LOWER(name) = LOWER('{spellName}') AND isValid = {True}"
+        query = f"SELECT * FROM spell WHERE LOWER(name) = LOWER('{spellName}') AND isValid = {True}"
         cursor.execute(query)
         spell = cursor.fetchone()
         if spell is not None:
             return spell
-    except:
-        print(f"Spell {spellName} does not exist")
     finally:
         cursor.close()
         db.close()
 
 
 def getPlayersWithSpell(spellName):
-    db = connectDatabase()
-    cursor = db.cursor()
     spell = findSpellByName(spellName)
     try:
+        db = connectDatabase()
+        cursor = db.cursor()
         query = f"SELECT p.discord_id, p.char_name FROM player p JOIN player_spell ps ON ps.player = p.id WHERE LOWER(ps.spell) = LOWER('{spell[0]}')"
         cursor.execute(query)
-        wizardList = cursor.fetchmany()
+        wizardList = cursor.fetchall()
         return wizardList
     except:
         print(f"There was an error trying to obtain the Wizard List")
@@ -230,12 +222,24 @@ def getPlayersWithSpell(spellName):
 
 
 def getSubclass(subclass):
-    db = connectDatabase()
-    cursor = db.cursor()
     try:
+        db = connectDatabase()
+        cursor = db.cursor()
         query = f"SELECT * FROM subclass s WHERE LOWER(s.subclass) = LOWER('{subclass}') AND s.isValid = {True}"
         cursor.execute(query)
-        return cursor.fetchmany()
+        return cursor.fetchone()
+    finally:
+        cursor.close()
+        db.close()
+
+
+def getCharacter(charName):
+    try:
+        db = connectDatabase()
+        cursor = db.cursor()
+        query = f"SELECT * FROM player p WHERE LOWER(p.char_name) = LOWER('{charName}') AND p.isActive = {True}"
+        cursor.execute(query)
+        return cursor.fetchall()
     finally:
         cursor.close()
         db.close()

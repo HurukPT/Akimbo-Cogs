@@ -16,3 +16,7 @@ class NoActiveCharacter(Exception):
 
 class DuplicateCharacter(Exception):
     pass
+
+
+class UnknownCharacter(Exception):
+    pass
