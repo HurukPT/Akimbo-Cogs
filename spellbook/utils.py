@@ -25,5 +25,5 @@ def listformatter(listtoformat):
 
 
 def processStringToList(spellList):
-    return sorted(set(string.capwords(str.lower(x.strip())).replace("Of", "of").replace("And", "and").replace("From", "from").replace("The", "the").replace("To", "to").replace("With", "with").replace("wither", "Wither").replace("deafness", "Deafness").replace("touch", "Touch")
+    return sorted(set(string.capwords(str.lower(x.strip())).replace("Of", "of").replace("And", "and").replace("From", "from").replace("The", "the").replace("To", "to").replace("With", "with").replace("wither", "Wither").replace("deafness", "Deafness").replace("touch", "Touch").replace("reduce", "Reduce")
                       for x in spellList.split(",")))
