@@ -36,15 +36,18 @@ def connectDatabase():
 
 
 def addCharacter(discordId, charName, subclass, level):
+    school = getSubclass(subclass)
+    if not school:
+        raise error.UnknownSubclass()
+    isRitualCaster = str.lower(school) == "ritual caster"
+    if isRitualCaster:
+        level = 0
     try:
         level = int(level)
     except ValueError:
         raise error.InvalidCharacterLevel()
     if level < 1 or level > 20:
         raise error.InvalidCharacterLevel()
-    school = getSubclass(subclass)
-    if not school:
-        raise error.UnknownSubclass()
     currentChar = getPlayerCharacters(discordId, True)
     if currentChar:
         raise error.ActiveCharExists()
@@ -108,19 +111,20 @@ def getPlayerCharacters(discordId, isActive=True):
 
 
 def setLevelForPlayer(discordId, level):
+    if not currentChar:
+        raise error.NoActiveCharacter()
     try:
         level = int(level)
     except ValueError:
         raise error.InvalidCharacterLevel()
-    if level < 1 or level > 20:
-        raise error.InvalidCharacterLevel()
     currentChar = getPlayerCharacters(discordId, True)
-    if not currentChar:
-        raise error.NoActiveCharacter()
+    newLevel = currentChar[0][4] + level
+    if (newLevel < 1 or newLevel > 20):
+        raise error.InvalidCharacterLevel()
     try:
         db = connectDatabase()
         cursor = db.cursor()
-        query = f"UPDATE 'player' SET wizard_level = {level} WHERE discord_id = {discordId}"
+        query = f"UPDATE 'player' SET wizard_level = {level} WHERE discord_id = {discordId} AND isActive = {True}"
         cursor.execute(query)
         db.commit()
     finally:
@@ -135,9 +139,12 @@ def getSpellListForPlayer(discordId):
     try:
         db = connectDatabase()
         cursor = db.cursor()
-        query = f"SELECT * FROM 'spell' WHERE isValid = {True} AND level <= {math.ceil(currentChar[4] / 2)} "
-        if "Graviturgist" not in currentChar:
-            query = query + f"AND isDunamancy = {False}"
+        if "Ritual Caster" not in currentChar:
+            query = f"SELECT * FROM spell s WHERE s.isValid = {True} AND s.level <= {math.ceil(currentChar[4] / 2)} "
+            if "Graviturgist" not in currentChar:
+                query = query + f"AND isDunamancy = {False}"
+        else:
+            query = f"SELECT * FROM spell s WHERE s.isValid = {True} and s.isRitual = {True}"
         cursor.execute(query)
         return cursor.fetchall()
     finally:
@@ -237,7 +244,7 @@ def getCharacter(charName):
     try:
         db = connectDatabase()
         cursor = db.cursor()
-        query = f"SELECT * FROM player p WHERE LOWER(p.char_name) = LOWER('{charName}') AND p.isActive = {True}"
+        query = f"SELECT p.discord_id, p.char_name, sc.subclass, p.wizard_level FROM player p JOIN subclass sc ON p.wizard_subclass = sc.id WHERE LOWER(p.char_name) = LOWER('{charName}') AND p.isActive = {True}"
         cursor.execute(query)
         return cursor.fetchall()
     finally:

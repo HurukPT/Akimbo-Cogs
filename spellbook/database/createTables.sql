@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS "player" (
 	"id"				INTEGER NOT NULL UNIQUE,
 	"discord_id"		INTEGER NOT NULL,
 	"char_name"			TEXT NOT NULL,
-	"wizard_subclass"	INTEGER,
+	"wizard_subclass"	INTEGER NOT NULL,
 	"wizard_level"		INTEGER,
 	"isActive"			INTEGER NOT NULL DEFAULT 1,
 	PRIMARY KEY("id" AUTOINCREMENT)
