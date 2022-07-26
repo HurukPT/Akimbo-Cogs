@@ -142,7 +142,7 @@ def getSpellListForPlayer(discordId):
         if "Ritual Caster" not in currentChar:
             query = f"SELECT * FROM spell s WHERE s.isValid = {True} AND s.level <= {math.ceil(currentChar[4] / 2)} "
             if "Graviturgist" not in currentChar:
-                query = query + f"AND isDunamancy = {False}"
+                query += f"AND isDunamancy = {False}"
         else:
             query = f"SELECT * FROM spell s WHERE s.isValid = {True} and s.isRitual = {True}"
         cursor.execute(query)
@@ -156,13 +156,16 @@ def getSpellbook(discordId, charName):
     currentChar = getPlayerCharacters(discordId, True)
     if not currentChar:
         raise error.NoActiveCharacter()
-    targetChar = getCharacter(charName)
-    if not targetChar:
-        raise error.UnknownCharacter()
+    if charName:
+        targetChar = getCharacter(charName)
+        if not targetChar:
+            raise error.UnknownCharacter()
     try:
         db = connectDatabase()
         cursor = db.cursor()
-        query = f"SELECT s.name FROM spell s JOIN player_spell ps ON ps.spell = s.id JOIN player p ON ps.player = p.id WHERE s.isValid = 1 AND LOWER(p.char_name) = LOWER('{targetChar[0][1]}')"
+        query = f"SELECT s.name FROM spell s JOIN player_spell ps ON ps.spell = s.id JOIN player p ON ps.player = p.id WHERE s.isValid = 1 "
+        if charName:
+            query += f"AND LOWER(p.char_name) = LOWER('{targetChar[0][1]}')"
         cursor.execute(query)
         return cursor.fetchall()
     finally:
@@ -170,18 +173,20 @@ def getSpellbook(discordId, charName):
         db.close()
 
 
-def addSpellsToPlayer(discordId, spellListIds):
-    db = connectDatabase()
-    cursor = db.cursor()
-    player = getPlayerCharacters(1)
-    if player is not None:
-        try:
-            query = f"INSERT INTO player_spell VALUES(NULL, {discordId}, ?)"
-            cursor.executemany(query, spellListIds)
-            db.commit()
-        finally:
-            cursor.close()
-            db.close()
+def addSpellsToPlayer(discordId, spells):
+    currentChar = getPlayerCharacters(discordId, True)
+    if not currentChar:
+        raise error.NoActiveCharacter()
+    spellIds = getSpellsByName(spells)
+    try:
+        db = connectDatabase()
+        cursor = db.cursor()
+        query = f"INSERT INTO player_spell VALUES(NULL, {discordId}, ?)"
+        cursor.executemany(query, spellIds)
+        db.commit()
+    finally:
+        cursor.close()
+        db.close()
 
 
 def removeSpellsFromPlayer(discordId, spellListIds):
@@ -245,6 +250,18 @@ def getCharacter(charName):
         db = connectDatabase()
         cursor = db.cursor()
         query = f"SELECT p.discord_id, p.char_name, sc.subclass, p.wizard_level FROM player p JOIN subclass sc ON p.wizard_subclass = sc.id WHERE LOWER(p.char_name) = LOWER('{charName}') AND p.isActive = {True}"
+        cursor.execute(query)
+        return cursor.fetchall()
+    finally:
+        cursor.close()
+        db.close()
+
+
+def getSpellsByName(spells):
+    try:
+        db = connectDatabase()
+        cursor = db.cursor()
+        query = f"SELECT s.id FROM spells s WHERE LOWER(s.name) IN LOWER({spells})"
         cursor.execute(query)
         return cursor.fetchall()
     finally:
